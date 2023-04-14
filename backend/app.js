@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const userRouter = require("./routes/user");
+const todoRouter = require("./routes/todo");
 
 const app = express();
 
@@ -12,6 +13,8 @@ app.use(express.json());
 
 app.use("/user", userRouter);
 // /user에 접속하면 userRouter를 사용해라.
+
+app.use("/todo", todoRouter);
 
 app.get("/", (req, res) => {
   res.send("Hello, Express!");
