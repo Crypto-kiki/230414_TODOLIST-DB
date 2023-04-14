@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  // provider = "postgresql" 을 mysql로 수정
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  // DB 타입을 prisma로 변경해줘야 함.
+  relationMode  = "prisma"
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  account String @unique
+  name String?
+  todos Todo[]
+  // model Todo의 입장에서 model User는 N (다수)의 입장임. 유저가 여러개의 Todo를 작성할 수 있기 때문. 따라서 Todo는 다수기 때문에 배열로 적음. 1: N 인데 1인 model User에도 todos Todo[]를 적어야되나? 적어야됨! prisma 문법임
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Todo {
+  id Int @id @default(autoincrement())
+  todo String
+  isDone Boolean
+  user User @relation(fields: [userId], references: [id])
+  // references는 User의 id임. 그럼 참조를 해오는 id를 뭐라할거냐? 를 fields: [userId] 라고 하는거임. 그럼 userId가 필요하겠지? 다수 인 쪽에서 관계를 정의해야 됨
+  // user라는건 User의 데이터를 참조하는데 전부 다 가져올 필요 없ㅇ reference [id]만 참조해서 가져옴. 그 가져온 값을 userId 필드에 적어줌
+  userId Int
+  // 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 가져온 데이터를 인덱싱 해줘야 함. mysql을 쓰려면 인덱싱을 해줘야 함. 인덱스는 검색 효율을 증대시킴.
+  @@index([userId])
+}
